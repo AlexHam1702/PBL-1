@@ -2,7 +2,7 @@
 
 **MVP Status:** \[e.g., v1.0-Production]
 
-**Group Members:** Name 1, Name 2, Name 3, Name 4
+**Group Members:** Noa Thams, Baptiste Lhors, Alexandre Hamard
 
 
 ## **🎯 Project Overview**
