@@ -81,10 +81,4 @@ The next iteration of this project aims to scale the complexity and accessibilit
 * **Monte Carlo Tree Search (MCTS)**: Implement MCTS as an alternative AI strategy for more "human-like" playstyles on larger grids.
 * **Save/Load System**: Add JSON-based serialization to save ongoing matches and track lifetime player statistics.
 
----
-
-*Generated as part of the AI & Algorithmic Design Production Deliverables.*
-
-Would you like me to generate a `test_game.py` file with unit tests to go along with this documentation?
-
 __
