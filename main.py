@@ -184,6 +184,8 @@ class TicTacToe:
         self.board = [[Player.EMPTY for _ in range(self.board_size)] for _ in range(self.board_size)]
         self.history = []
 
+import time
+
 def play_game(mode: GameMode, game: TicTacToe):
     """Main game loop"""
     print(f"\n=== Game Started: {mode.name} ===")
@@ -192,8 +194,9 @@ def play_game(mode: GameMode, game: TicTacToe):
     while True:
         game.display_board()
         
-        if game.check_winner():
-            winner = game.check_winner()
+        # 1. Check for Terminal State
+        winner = game.check_winner()
+        if winner:
             print(f"{'AI' if winner == Player.AI else 'Player'} wins!")
             break
         
@@ -201,7 +204,9 @@ def play_game(mode: GameMode, game: TicTacToe):
             print("It's a draw!")
             break
         
+        # 2. Handle Game Modes
         if mode == GameMode.HUMAN_VS_AI:
+            # Human Turn (X)
             print("Your turn (X):")
             while True:
                 try:
@@ -211,14 +216,13 @@ def play_game(mode: GameMode, game: TicTacToe):
                 except:
                     print("Invalid input!")
             
-            if game.check_winner() or game.is_board_full():
-                continue
-            
-            move = game.get_best_ai_move()
-            if move:
-                game.make_move(move[0], move[1], Player.AI)
-                print(f"AI plays at ({move[0]}, {move[1]})")
-        
+            # AI Turn (O) - Only if game isn't over
+            if not game.check_winner() and not game.is_board_full():
+                move = game.get_best_ai_move()
+                if move:
+                    game.make_move(move[0], move[1], Player.AI)
+                    print(f"AI plays at ({move[0]}, {move[1]})")
+
         elif mode == GameMode.HUMAN_VS_HUMAN:
             player = Player.HUMAN if len(game.history) % 2 == 0 else Player.AI
             symbol = "X" if player == Player.HUMAN else "O"
@@ -231,12 +235,27 @@ def play_game(mode: GameMode, game: TicTacToe):
                 except:
                     print("Invalid input!")
 
+        elif mode == GameMode.AI_VS_AI:
+            # Determine which AI is moving based on history length
+            # Even turns = AI 1 (acting as HUMAN/X), Odd turns = AI 2 (acting as AI/O)
+            is_first_ai_turn = (len(game.history) % 2 == 0)
+            current_player = Player.HUMAN if is_first_ai_turn else Player.AI
+            
+            print(f"AI ({'X' if is_first_ai_turn else 'O'}) is thinking...")
+            time.sleep(1) # Slows down the spam so you can watch
+            
+            # We call minimax. For X, we want to minimize score; for O, we maximize.
+            _, move = game.minimax(game.ai_depth, not is_first_ai_turn)
+            
+            if move:
+                game.make_move(move[0], move[1], current_player)
+
 def main():
     """Main program"""
     game = TicTacToe()
     
     while True:
-        print("\n=== Tic Tac Toe ===")
+        print("\n=== Tic Tac Terminal ===\nLearn to play Tic Tac Toe with an unbeatable AI opponent!")
         print("1. Human vs AI")
         print("2. Human vs Human")
         print("3. AI vs AI")
