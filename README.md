@@ -1,13 +1,16 @@
-# **📦 \[Project Name]**
+# **📦 \TicTacTerminal**
 
-**MVP Status:** \[e.g., v1.0-Production]
+**MVP Status:** v0.67
 
-**Group Members:** Noa Thams, Baptiste Lhors, Alexandre Hamard
+**Group Members:** Noa Thams, Baptiste Lhors, Eleanore Cortes-Sommaro, Alexandre Hamard
 
 
 ## **🎯 Project Overview**
 
 Provide a concise (2-3 sentence) description of what your application does and the specific problem it solves. Why did you build this?
+
+This application is a terminal-based Tic Tac Toe interface. It has multiple gamemodes and changeable difficulty and an IA powered by a Minimax Algorithm.
+The goal is to provide the client with a stable, easy to use and fun tic tac toe game with an IA able to simulate next moves.
 
 
 ## **🚀 Quick Start (Architect Level: < 60s Setup)**
