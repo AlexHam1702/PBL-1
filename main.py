@@ -3,6 +3,10 @@ import sys
 from enum import Enum
 from typing import Optional, Tuple, List
 from copy import deepcopy
+from colorama import Fore, Back, Style, init
+
+# Initialize colorama for cross-platform color support
+init(autoreset=True)
 
 class Player(Enum):
     HUMAN = 1
@@ -29,17 +33,17 @@ class TicTacToe:
             print(f" {i} | ", end="")
             for j, cell in enumerate(row):
                 if cell == Player.HUMAN:
-                    print("X", end=" ")
+                    print(f"{Fore.GREEN}X{Style.RESET_ALL}", end=" ")
                 elif cell == Player.AI:
-                    print("O", end=" ")
+                    print(f"{Fore.RED}O{Style.RESET_ALL}", end=" ")
                 else:
                     print(".", end=" ")
             print()
-        print("    " + "-" * (self.board_size * 2 - 1))
+        print(f"{Fore.CYAN}    " + "-" * (self.board_size * 2 - 1))
         print("    ", end="")
         for j in range(self.board_size):
             print(j, end=" ")
-        print("\n")
+        print(f"{Style.RESET_ALL}\n")
     
     def is_valid_move(self, row: int, col: int) -> bool:
         """Check if a move is valid"""
@@ -177,7 +181,7 @@ class TicTacToe:
     def set_difficulty(self, depth: int):
         """Set AI difficulty level"""
         self.ai_depth = max(1, min(depth, 9))
-        print(f"Difficulty set to depth: {self.ai_depth}")
+        print(f"{Fore.YELLOW}Difficulty set to depth: {self.ai_depth}{Style.RESET_ALL}")
     
     def reset_game(self):
         """Reset the game board"""
@@ -188,7 +192,7 @@ import time
 
 def play_game(mode: GameMode, game: TicTacToe):
     """Main game loop"""
-    print(f"\n=== Game Started: {mode.name} ===")
+    print(f"\n{Fore.CYAN}=== Game Started: {mode.name} ==={Style.RESET_ALL}")
     game.reset_game()
     
     while True:
@@ -197,17 +201,20 @@ def play_game(mode: GameMode, game: TicTacToe):
         # 1. Check for Terminal State
         winner = game.check_winner()
         if winner:
-            print(f"{'AI' if winner == Player.AI else 'Player'} wins!")
+            if winner == Player.AI:
+                print(f"{Fore.RED}AI wins!{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.GREEN}Player wins!{Style.RESET_ALL}")
             break
         
         if game.is_board_full():
-            print("It's a draw!")
+            print(f"{Fore.YELLOW}It's a draw!{Style.RESET_ALL}")
             break
         
         # 2. Handle Game Modes
         if mode == GameMode.HUMAN_VS_AI:
             # Human Turn (X)
-            print("Your turn (X):")
+            print(f"{Fore.GREEN}Your turn (X):{Style.RESET_ALL}")
             while True:
                 try:
                     row, col = map(int, input("Enter row and column (0-2): ").split())
@@ -221,12 +228,13 @@ def play_game(mode: GameMode, game: TicTacToe):
                 move = game.get_best_ai_move()
                 if move:
                     game.make_move(move[0], move[1], Player.AI)
-                    print(f"AI plays at ({move[0]}, {move[1]})")
+                    print(f"{Fore.RED}AI plays at ({move[0]}, {move[1]}){Style.RESET_ALL}")
 
         elif mode == GameMode.HUMAN_VS_HUMAN:
             player = Player.HUMAN if len(game.history) % 2 == 0 else Player.AI
             symbol = "X" if player == Player.HUMAN else "O"
-            print(f"Player {symbol} turn:")
+            color = Fore.GREEN if player == Player.HUMAN else Fore.RED
+            print(f"{color}Player {symbol} turn:{Style.RESET_ALL}")
             while True:
                 try:
                     row, col = map(int, input("Enter row and column (0-2): ").split())
@@ -241,7 +249,9 @@ def play_game(mode: GameMode, game: TicTacToe):
             is_first_ai_turn = (len(game.history) % 2 == 0)
             current_player = Player.HUMAN if is_first_ai_turn else Player.AI
             
-            print(f"AI ({'X' if is_first_ai_turn else 'O'}) is thinking...")
+            symbol = 'X' if is_first_ai_turn else 'O'
+            color = Fore.GREEN if is_first_ai_turn else Fore.RED
+            print(f"{color}AI ({symbol}) is thinking...{Style.RESET_ALL}")
             time.sleep(1) # Slows down the spam so you can watch
             
             # We call minimax. For X, we want to minimize score; for O, we maximize.
@@ -255,12 +265,13 @@ def main():
     game = TicTacToe()
     
     while True:
-        print("\n=== Tic Tac Terminal ===\nLearn to play Tic Tac Toe with an unbeatable AI opponent!")
-        print("1. Human vs AI")
-        print("2. Human vs Human")
-        print("3. AI vs AI")
-        print("4. Set Difficulty")
-        print("5. Exit")
+        print(f"\n{Fore.CYAN}=== Tic Tac Terminal ===")
+        print(f"Learn to play Tic Tac Toe with an unbeatable AI opponent!{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}1. Human vs AI")
+        print(f"{Fore.YELLOW}2. Human vs Human")
+        print(f"{Fore.RED}3. AI vs AI")
+        print(f"{Fore.MAGENTA}4. Set Difficulty")
+        print(f"{Fore.LIGHTRED_EX}5. Exit{Style.RESET_ALL}")
         
         choice = input("Select option: ")
         
