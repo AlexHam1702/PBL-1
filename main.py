@@ -1,30 +1,30 @@
-import os
-import sys
-from enum import Enum
-from typing import Optional, Tuple, List
-from copy import deepcopy
-from colorama import Fore, Back, Style, init
+import os  # operating system utilities (not heavily used here)
+import sys  # system-specific parameters and functions
+from enum import Enum  # enum base class for Player and GameMode
+from typing import Optional, Tuple, List  # typing hints for readability
+from copy import deepcopy  # for creating board copies during analysis
+from colorama import Fore, Back, Style, init  # colorful terminal output support
 
 # Initialize colorama for cross-platform color support
-init(autoreset=True)
+init(autoreset=True)  # automatically reset colors after each print
 
 class Player(Enum):
-    HUMAN = 1
-    AI = -1
-    EMPTY = 0
+    HUMAN = 1  # human player marker (X)
+    AI = -1  # AI player marker (O)
+    EMPTY = 0  # empty cell placeholder
 
 class GameMode(Enum):
-    HUMAN_VS_AI = 1
-    HUMAN_VS_HUMAN = 2
-    AI_VS_AI = 3
+    HUMAN_VS_AI = 1  # one human versus the computer
+    HUMAN_VS_HUMAN = 2  # two humans play locally
+    AI_VS_AI = 3  # watch two AIs battle
 
 class TicTacToe:
     def __init__(self, board_size: int = 3, win_count: int = 3):
-        self.board_size = board_size
-        self.win_count = win_count
-        self.board = [[Player.EMPTY for _ in range(board_size)] for _ in range(board_size)]
-        self.ai_depth = 5
-        self.history = []
+        self.board_size = board_size  # size of the tic‑tac‑toe grid
+        self.win_count = win_count  # how many in a row to win
+        self.board = [[Player.EMPTY for _ in range(board_size)] for _ in range(board_size)]  # 2D board init
+        self.ai_depth = 5  # default search depth for AI minimax
+        self.history = []  # list of moves made (row, col, player)
     
     def display_board(self):
         """Display the current game board"""
@@ -48,53 +48,53 @@ class TicTacToe:
     def is_valid_move(self, row: int, col: int) -> bool:
         """Check if a move is valid"""
         if 0 <= row < self.board_size and 0 <= col < self.board_size:
-            return self.board[row][col] == Player.EMPTY
+            return self.board[row][col] == Player.EMPTY  # valid iff cell is empty and inside bounds
         return False
     
     def make_move(self, row: int, col: int, player: Player) -> bool:
         """Make a move on the board"""
         if self.is_valid_move(row, col):
-            self.board[row][col] = player
-            self.history.append((row, col, player))
+            self.board[row][col] = player  # place the player's mark
+            self.history.append((row, col, player))  # record move for replay/undo
             return True
-        return False
+        return False  # move was invalid
     
     def check_winner(self) -> Optional[Player]:
         """Check if there's a winner"""
         # Check rows
         for row in self.board:
             if all(cell == row[0] and cell != Player.EMPTY for cell in row):
-                return row[0]
+                return row[0]  # horizontal win detected
         
         # Check columns
         for col in range(self.board_size):
             column = [self.board[row][col] for row in range(self.board_size)]
             if all(cell == column[0] and cell != Player.EMPTY for cell in column):
-                return column[0]
+                return column[0]  # vertical win detected
         
         # Check diagonals
         diag1 = [self.board[i][i] for i in range(self.board_size)]
         if all(cell == diag1[0] and cell != Player.EMPTY for cell in diag1):
-            return diag1[0]
+            return diag1[0]  # main diagonal win
         
         diag2 = [self.board[i][self.board_size - 1 - i] for i in range(self.board_size)]
         if all(cell == diag2[0] and cell != Player.EMPTY for cell in diag2):
-            return diag2[0]
+            return diag2[0]  # anti‑diagonal win
         
         return None
     
     def is_board_full(self) -> bool:
         """Check if board is full"""
-        return all(cell != Player.EMPTY for row in self.board for cell in row)
+        return all(cell != Player.EMPTY for row in self.board for cell in row)  # true when no empty spaces remain
     
     def evaluate(self) -> int:
         """Evaluation function for game state"""
         winner = self.check_winner()
         if winner == Player.AI:
-            return 100
+            return 100  # favorable board for AI
         elif winner == Player.HUMAN:
-            return -100
-        return 0
+            return -100  # favorable board for human
+        return 0  # neutral board
     
     def get_available_moves(self) -> List[Tuple[int, int]]:
         """Get all available moves"""
@@ -107,15 +107,15 @@ class TicTacToe:
     
     def minimax(self, depth: int, is_ai_turn: bool, alpha: int = -float('inf'), beta: int = float('inf')) -> Tuple[int, Optional[Tuple[int, int]]]:
         """Minimax algorithm with alpha-beta pruning"""
-        winner = self.check_winner()
+        winner = self.check_winner()  # terminal state check
         if winner == Player.AI:
-            return 100 + depth, None
+            return 100 + depth, None  # deeper win is slightly preferred
         elif winner == Player.HUMAN:
-            return -100 - depth, None
+            return -100 - depth, None  # deeper loss is slightly worse
         elif self.is_board_full():
-            return 0, None
+            return 0, None  # draw
         elif depth == 0:
-            return self.evaluate(), None
+            return self.evaluate(), None  # heuristic at depth limit
         
         available_moves = self.get_available_moves()
         best_move = None
@@ -151,7 +151,7 @@ class TicTacToe:
     
     def get_best_ai_move(self) -> Optional[Tuple[int, int]]:
         """Get the best move for AI"""
-        _, best_move = self.minimax(self.ai_depth, True)
+        _, best_move = self.minimax(self.ai_depth, True)  # start minimax search for best AI move
         return best_move
     
     def show_winning_sequence(self, ai_wins: bool):
@@ -225,7 +225,7 @@ def play_game(mode: GameMode, game: TicTacToe):
             
             # AI Turn (O) - Only if game isn't over
             if not game.check_winner() and not game.is_board_full():
-                move = game.get_best_ai_move()
+                move = game.get_best_ai_move()  # compute best move via minimax
                 if move:
                     game.make_move(move[0], move[1], Player.AI)
                     print(f"{Fore.RED}AI plays at ({move[0]}, {move[1]}){Style.RESET_ALL}")
@@ -246,7 +246,7 @@ def play_game(mode: GameMode, game: TicTacToe):
         elif mode == GameMode.AI_VS_AI:
             # Determine which AI is moving based on history length
             # Even turns = AI 1 (acting as HUMAN/X), Odd turns = AI 2 (acting as AI/O)
-            is_first_ai_turn = (len(game.history) % 2 == 0)
+            is_first_ai_turn = (len(game.history) % 2 == 0)  # alternate which AI acts as X or O
             current_player = Player.HUMAN if is_first_ai_turn else Player.AI
             
             symbol = 'X' if is_first_ai_turn else 'O'
@@ -273,7 +273,7 @@ def main():
         print(f"{Fore.MAGENTA}4. Set Difficulty")
         print(f"{Fore.LIGHTRED_EX}5. Exit{Style.RESET_ALL}")
         
-        choice = input("Select option: ")
+        choice = input("Select option: ")  # user selects game mode or action
         
         if choice == "1":
             play_game(GameMode.HUMAN_VS_AI, game)
