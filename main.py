@@ -216,7 +216,7 @@ def play_game(mode: GameMode, game: TicTacToe):
             # Human Turn (X)
             print(f"{Fore.GREEN}Your turn (X):{Style.RESET_ALL}")
             while True:
-                try:
+                try:            
                     row, col = map(int, input("Enter row and column (0-2): ").split())
                     if game.make_move(row, col, Player.HUMAN):
                         break
